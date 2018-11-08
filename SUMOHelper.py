@@ -7,8 +7,7 @@ if 'SUMO_HOME' in os.environ:
 else:   
  sys.exit("please declare environment variable 'SUMO_HOME'")
 
-sumoBinary = "/usr/bin/sumo-gui"
-sumoCmd = [sumoBinary, "-c", "sumo-data/rl.sumo.cfg"]
+
 
 import traci
 import numpy as np
@@ -19,7 +18,7 @@ class SUMOHelper:
 		super(SUMOHelper, self).__init__()
 		self.traci = traci	
 		self.sumoBinary = binary_path
-		self.sumoCmd = [sumoBinary, "-c", sumo_cfg_path]
+		self.sumoCmd = [self.sumoBinary, "-c", sumo_cfg_path]
 
 
 	def start(self):
