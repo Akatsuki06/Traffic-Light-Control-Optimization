@@ -5,7 +5,7 @@ from DQLearner import DQLearner
 
 agent = DQLearner()
 try:
-	agent.load('models/trained_model.h5')
+	agent.load('models/models/trained_model1541685813.2214334.h5')
 except:
 	print('No trained models found!')
 
