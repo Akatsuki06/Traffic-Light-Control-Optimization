@@ -18,11 +18,14 @@ class SUMOHelper:
 		super(SUMOHelper, self).__init__()
 		self.traci = traci	
 		self.sumoBinary = binary_path
-		self.sumoCmd = [self.sumoBinary, "-c", sumo_cfg_path]
+		self.sumoCmd = [self.sumoBinary, "-c", sumo_cfg_path, "--start","--quit-on-end"]
 
 
 	def start(self):
 		self.traci.start(self.sumoCmd) 
+
+	def close(self):
+		self.traci.close(wait=True)
 
 	def __str__(self):
 		return "This is custom SUMO module\n"
@@ -45,17 +48,17 @@ class SUMOHelper:
 		return wt
 
 
-	def getReward1(self):
+	def getr1(self):
 		return self.traci.edge.getLastStepVehicleNumber(
                     '1si') + self.traci.edge.getLastStepVehicleNumber('2si')
 
-	def getReward2(self):
+	def getr2(self):
 		return self.traci.edge.getLastStepVehicleNumber(
                     '3si') + self.traci.edge.getLastStepVehicleNumber('4si')
 
 	def simulate(self,waiting_time,action,light,tls,step):
 
-		if(action == 0 and light[0][0][0] == 0):# Transition Phase
+		if(action == 0 and light[0][0][0] == 0):
 		    for i in range(6):
 		        step += 1
 		        tls.setPhase('0', 1)
@@ -73,34 +76,34 @@ class SUMOHelper:
 		        self.step()
 
 		    # Action Execution
-		    reward1 = self.getReward1()
-		    reward2 = self.getReward2()
+		    r1 = self.getr1()
+		    r2 = self.getr2()
 		    for i in range(10):
 		        step += 1
 		        tls.setPhase('0', 4)
-		        reward1 += self.getReward1()
-		        reward2 += self.getReward2()
+		        r1 += self.getr1()
+		        r2 += self.getr2()
 		        waiting_time += self.getWaitingTime()
 		        self.step()
 
-		if(action == 0 and light[0][0][0] == 1): # Action Execution, no state change
-		    reward1 = self.getReward1()
-		    reward2 = self.getReward2()
+		if(action == 0 and light[0][0][0] == 1):
+		    r1 = self.getr1()
+		    r2 = self.getr2()
 		    for i in range(10):
 		        step += 1
 		        tls.setPhase('0', 4)
-		        reward1 += self.getReward1()
-		        reward2 += self.getReward2()
+		        r1 += self.getr1()
+		        r2 += self.getr2()
 		        waiting_time += self.getWaitingTime()
 		        self.step()
 
 		if(action == 1 and light[0][0][0] == 0):
-		    reward2 = self.getReward1()#getReward2()
-		    reward1 = self.getReward2()
+		    r2 = self.getr1()
+		    r1 = self.getr2()
 		    for i in range(10):
 		        step += 1
-		        reward2 += self.getReward1()
-		        reward1 += self.getReward2()
+		        r2 += self.getr1()
+		        r1 += self.getr2()
 		        tls.setPhase('0', 0)
 		        waiting_time += self.getWaitingTime()
 		        self.step()
@@ -122,21 +125,21 @@ class SUMOHelper:
 		        waiting_time += self.getWaitingTime()
 		        self.step()
 
-		    reward2 = self.getReward1()
-		    reward1 = self.getReward2()
+		    r2 = self.getr1()
+		    r1 = self.getr2()
 		    for i in range(10):
 		        step += 1
 		        tls.setPhase('0', 0)
-		        reward2 += self.getReward1()
-		        reward1 += self.getReward2()
+		        r2 += self.getr1()
+		        r1 += self.getr2()
 		        waiting_time += self.getWaitingTime()
 		        self.step()
 
 		state = self.getState()
-		reward = reward1-reward2
+		reward = r1-r2
 		return step,state,reward,waiting_time
 
-	def getState(self):
+	def getState(self):#get velocity and position normalize the data
 	    cellLength = 7
 	    offset = 11
 	    speedLimit = 14
@@ -200,8 +203,4 @@ class SUMOHelper:
 	    lgts = lgts.reshape(1, 2, 1)
 
 	    return [position, velocity, lgts]
-
-
-	def close(self):
-		self.traci.close(wait=False)
 

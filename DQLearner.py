@@ -21,9 +21,9 @@ class DQLearner(object):
 		return "This is deep q learning module\n"
 
 	def get_model(self):
-		inp1 = Input(shape=(12, 12, 1))
-		inp2 = Input(shape=(12, 12, 1))
-		inp3 = Input(shape=(2, 1))
+		inp1 = Input(shape=(12, 12, 1))# for state
+		inp2 = Input(shape=(12, 12, 1))# for action
+		inp3 = Input(shape=(2, 1))# for the tls
 
 		x1 = Conv2D(16, (4, 4), strides=(2, 2), activation='relu')(inp1)
 		x1 = Conv2D(32, (2, 2), strides=(1, 1), activation='relu')(x1)
